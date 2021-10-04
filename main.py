@@ -4,8 +4,8 @@ import smtplib
 from email.mime.text import MIMEText
 
 sendEmail = "se072@naver.com"
-recvEmail = "nangpae2001@hanmail.net"
-password = "C$j9223096"
+recvEmail = "mcgiljoy@hotmail.com"
+password = "$j922396"
 
 smtpName = "smtp.naver.com" #smtp 서버 주소
 smtpPort = 587 #smtp 포트 번호
