@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import urllib.request
 import requests
 import re
+import json
+
 
 # now = datetime.datetime.now()
 # nowDate = now.strftime('%Y년 %m월 %d일 %H시 %M분 입니다.')
@@ -76,10 +78,45 @@ print('soup 끝 -------------------------------------------------------')
 #         # if re.compile("smartstore+ "):
 #             print('smartstore Link', link['href'])
 
-scriptTag = soup.find('script', id='__NEXT_DATA__')
-print('scriptTag 시작-----------------------------------')
-print(scriptTag)
-print('scriptTag 끝-----------------------------------')
+
+# Json 형태의 정보 가져오기
+scriptTag = soup.find('script', id='__NEXT_DATA__').get_text()
+# print('scriptTag 시작-----------------------------------')
+# print(scriptTag)
+# print('scriptTag 끝-----------------------------------')
+
+# Json 파싱
+# jsonMall = json.dumps(scriptTag, indent=4, sort_keys=True)
+print('jsonMall 시작-----------------------------------')
+# print(jsonMall)
+# jsonObject로 담음
+jsonObject = json.loads(scriptTag)
+# print(jsonObject)
+# Product List를 가져온다.
+# props = jsonObject.get("props")
+# print("props : ", props)
+# pageProps = props.get("pageProps")
+# print("pageProps : ", pageProps)
+prodList = jsonObject.get("props").get("pageProps").get("initialState").get("products").get("list")
+# print("prodList : ", prodList)
+
+
+for prod in prodList:
+    item = prod.get("item")
+    mallProductUrl = str(item.get("mallProductUrl"))
+    print("mallProductUrl : ", mallProductUrl)
+    # smartstore 인 경우 상세 주소로 이동한다.
+    if(mallProductUrl.find("smartstore") > 0) :
+        smartStorePage = urllib.request.urlopen(mallProductUrl)
+        smartStoreSoup = BeautifulSoup(smartStorePage, 'html.parser')
+        print("smartStoreSoup : ", smartStoreSoup)
+    # strTest = 'https://m.smartstore.naver.com/main/products/5245895677'
+    # print(strTest.find("smartstore"))
+
+print("list : ", list)
+print('jsonMall 끝-----------------------------------')
+# smartstore 정보 추리기
+
 
 # webpage = urllib.request.urlopen('https://search.naver.com/search.naver?sm=top_hty&fbm=0&ie=utf8&query=%EB%8C%80%EA%B5%AC+%EB%82%A0%EC%94%A8')
 # soup = BeautifulSoup(webpage, 'html.parser')
@@ -92,4 +129,4 @@ print('scriptTag 끝-----------------------------------')
 # temps = soup.find('span',"todaytemp")
 # cast = soup.find('p',"cast_txt")
 # print('--> 부산 날씨 : ' , temps.get_text() , '℃' , cast.get_text())
-print('\n')
+# print('\n')
