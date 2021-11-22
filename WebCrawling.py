@@ -29,119 +29,87 @@ import json
 # print('--> 서울 날씨 : ', temps.get_text(), '℃', cast.get_text())
 # print('--> 서울 날씨 : ', temps.get_text())
 
-# 스마트스토어 목록
-
-# webpage=requests.get('https://search.shopping.naver.com/search/all?origQuery=%EC%8A%A4%ED%86%A0%EC%96%B4&pagingIndex=1&pagingSize=40&productSet=total&query=%EC%8A%A4%ED%86%A0%EC%96%B4&sort=rel&timestamp=&viewType=list')
-# soup = Soup(webpage.text, 'html.parser')
-webpage = urllib.request.urlopen('https://search.shopping.naver.com/search/all?origQuery=%EC%8A%A4%ED%86%A0%EC%96%B4&pagingIndex=4&pagingSize=40&productSet=total&query=%EC%8A%A4%ED%86%A0%EC%96%B4&sort=rel&timestamp=&viewType=list').read()
-# print('-------------------------------------------------------')
-# print(webpage)
-
-# print('-------------------------------------------------------')
-
-
-soup = BeautifulSoup(webpage, 'html.parser')
-# print('soup 시작 -------------------------------------------------------')
-
-# print(soup)
-# print('soup 끝 -------------------------------------------------------')
-
-# aTag = soup.find_all('a')
-# temps = soup.find_all('a', {'class:basicList_mall__sbVax')
-# , 'href')
-# temps = soup.select('a.basicList_mall__sbVax')
-
-# re.compile ("^smartstore"))
-# print('aTag 시작 -------------------------------------------------------')
-# aTag = soup.find_all('a')
-#
-# # print(aTag)
-# print('aTag 끝 -------------------------------------------------------')
-#
-# print('aTag Select 시작 -------------------------------------------------------')
-# aTagSel = soup.select('a')
-#
-# print(aTagSel)
-# print('aTag Select 끝 -------------------------------------------------------')
-#
-# temps = soup.find_all('a', 'basicList_mall__sbVax')
-# # temps = soup.select('a.basicList_mall__sbVax')
-# print("smartstore a Tag :", temps)
-# links = soup.select('a[href]')
-# print("links :", links)
-#
-#
-# for link in links:
-#     # 특정 문자열을 포함한 링크를 가져온다.
-#     # if re.search('^https:\/\/s\w+', link['href']):
-#     if re.search('smartstore', link['href']):
-#         # if re.compile("smartstore+ "):
-#             print('smartstore Link', link['href'])
-
-
-# Json 형태의 정보 가져오기
-scriptTag = soup.find('script', id='__NEXT_DATA__').get_text()
-# print('scriptTag 시작-----------------------------------')
-# print(scriptTag)
-# print('scriptTag 끝-----------------------------------')
-
-# Json 파싱
-# jsonMall = json.dumps(scriptTag, indent=4, sort_keys=True)
-# print('jsonMall 시작-----------------------------------')
-# print(jsonMall)
-# jsonObject로 담음
-jsonObject = json.loads(scriptTag)
-# print(jsonObject)
-# Product List를 가져온다.
-# props = jsonObject.get("props")
-# print("props : ", props)
-# pageProps = props.get("pageProps")
-# print("pageProps : ", pageProps)
-prodList = jsonObject.get("props").get("pageProps").get("initialState").get("products").get("list")
-# print("prodList : ", prodList)
-
 # 파일로 저장하기
 f = open("smartstore.csv", 'w')
 f.write("상호" + "," + "E-Mail" + "\n")
 
-for prod in prodList:
-    item = prod.get("item")
-    mallProductUrl = str(item.get("mallProductUrl"))
-    # print("mallProductUrl : ", mallProductUrl)
-    # smartstore 인 경우 상세 주소로 이동한다.
-    if(mallProductUrl.find("smartstore") > 0) :
-        smartStorePage = urllib.request.urlopen(mallProductUrl)
-        smartStoreSoup = BeautifulSoup(smartStorePage, 'html.parser')
-        # print("smartStoreSoup : ", smartStoreSoup)
-        scriptTags = smartStoreSoup.find_all('script')
-        # id='_10PxysFyMd')
-        for scriptTag in scriptTags:
-            strScript = scriptTag.getText()
-            if(strScript.find("chrgrEmail") > 0):
-                print("/////////////////////////////////////////////")
-                print("strScript : ", strScript)
-                # print("Index : ", strScript.find("="))
-                # print("Length : ", len(strScript))
-                # 상호 가져오기
-                strChrgr = strScript[strScript.find("representName") - 1: len(strScript)]
-                print("strChrgr : ", strChrgr)
-                strRepresentName = strChrgr[strChrgr.find(":") + 2: strChrgr.find(",")-1]
-                print("representName : ", strRepresentName)
+# 스마트스토어 목록
+
+# webpage=requests.get('https://search.shopping.naver.com/search/all?origQuery=%EC%8A%A4%ED%86%A0%EC%96%B4&pagingIndex=1&pagingSize=40&productSet=total&query=%EC%8A%A4%ED%86%A0%EC%96%B4&sort=rel&timestamp=&viewType=list')
+# soup = Soup(webpage.text, 'html.parser')
+for i in range(1, 100):
+    webpage = urllib.request.urlopen('https://search.shopping.naver.com/search/all?origQuery=%EC%8A%A4%ED%86%A0%EC%96%B4&pagingIndex=' + str(i) + '&pagingSize=40&productSet=total&query=%EC%8A%A4%ED%86%A0%EC%96%B4&sort=rel&timestamp=&viewType=list').read()
+    # print('-------------------------------------------------------')
+    # print(webpage)
+
+    # print('-------------------------------------------------------')
 
 
-                # Email 주소 가져오기
-                strChrgr = strScript[strScript.find("chrgrEmail") - 1: len(strScript)]
-                print("strChrgr : ", strChrgr)
-                strEmail = strChrgr[strChrgr.find(":") + 2: strChrgr.find(",")-1]
-                print("strEmail : ", strEmail)
+    soup = BeautifulSoup(webpage, 'html.parser')
+    # print('soup 시작 -------------------------------------------------------')
 
-                #파일에 쓴다
-                f.write(strRepresentName + "," + strEmail + "\n")
-                print("/////////////////////////////////////////////")
-        # print("eMailTag : ", eMailTag)
-        # break
-    # strTest = 'https://m.smartstore.naver.com/main/products/5245895677'
-    # print(strTest.find("smartstore"))
+
+    # Json 형태의 정보 가져오기
+    scriptTag = soup.find('script', id='__NEXT_DATA__').get_text()
+    # print('scriptTag 시작-----------------------------------')
+    # print(scriptTag)
+    # print('scriptTag 끝-----------------------------------')
+
+    # Json 파싱
+    # jsonMall = json.dumps(scriptTag, indent=4, sort_keys=True)
+    # print('jsonMall 시작-----------------------------------')
+    # print(jsonMall)
+    # jsonObject로 담음
+    jsonObject = json.loads(scriptTag)
+    # print(jsonObject)
+    # Product List를 가져온다.
+    # props = jsonObject.get("props")
+    # print("props : ", props)
+    # pageProps = props.get("pageProps")
+    # print("pageProps : ", pageProps)
+    prodList = jsonObject.get("props").get("pageProps").get("initialState").get("products").get("list")
+    # print("prodList : ", prodList)
+
+
+
+    for prod in prodList:
+        item = prod.get("item")
+        mallProductUrl = str(item.get("mallProductUrl"))
+        # print("mallProductUrl : ", mallProductUrl)
+        # smartstore 인 경우 상세 주소로 이동한다.
+        if(mallProductUrl.find("smartstore") > 0) :
+            smartStorePage = urllib.request.urlopen(mallProductUrl)
+            smartStoreSoup = BeautifulSoup(smartStorePage, 'html.parser')
+            # print("smartStoreSoup : ", smartStoreSoup)
+            scriptTags = smartStoreSoup.find_all('script')
+            # id='_10PxysFyMd')
+            for scriptTag in scriptTags:
+                strScript = scriptTag.getText()
+                if(strScript.find("chrgrEmail") > 0):
+                    print("/////////////////////////////////////////////")
+                    print("strScript : ", strScript)
+                    # print("Index : ", strScript.find("="))
+                    # print("Length : ", len(strScript))
+                    # 상호 가져오기
+                    strChrgr = strScript[strScript.find("representName") - 1: len(strScript)]
+                    # print("strChrgr : ", strChrgr)
+                    strRepresentName = strChrgr[strChrgr.find(":") + 2: strChrgr.find(",")-1]
+                    print("representName : ", strRepresentName)
+
+
+                    # Email 주소 가져오기
+                    strChrgr = strScript[strScript.find("chrgrEmail") - 1: len(strScript)]
+                    # print("strChrgr : ", strChrgr)
+                    strEmail = strChrgr[strChrgr.find(":") + 2: strChrgr.find(",")-1]
+                    print("strEmail : ", strEmail)
+
+                    #파일에 쓴다
+                    f.write(strRepresentName + "," + strEmail + "\n")
+                    print("/////////////////////////////////////////////")
+            # print("eMailTag : ", eMailTag)
+            # break
+        # strTest = 'https://m.smartstore.naver.com/main/products/5245895677'
+        # print(strTest.find("smartstore"))
 
 #파일 닫기
 f.close()
