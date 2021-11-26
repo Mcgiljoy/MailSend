@@ -31,13 +31,14 @@ import json
 
 # 파일로 저장하기
 f = open("smartstore.csv", 'w')
-f.write("상호" + "," + "E-Mail" + "\n")
+f.write("상호,E-Mail,URL" + "\n")
 
 # 스마트스토어 목록
 
 # webpage=requests.get('https://search.shopping.naver.com/search/all?origQuery=%EC%8A%A4%ED%86%A0%EC%96%B4&pagingIndex=1&pagingSize=40&productSet=total&query=%EC%8A%A4%ED%86%A0%EC%96%B4&sort=rel&timestamp=&viewType=list')
 # soup = Soup(webpage.text, 'html.parser')
 for i in range(1, 100):
+    print("i : ", i)
     webpage = urllib.request.urlopen('https://search.shopping.naver.com/search/all?origQuery=%EC%8A%A4%ED%86%A0%EC%96%B4&pagingIndex=' + str(i) + '&pagingSize=40&productSet=total&query=%EC%8A%A4%ED%86%A0%EC%96%B4&sort=rel&timestamp=&viewType=list').read()
     # print('-------------------------------------------------------')
     # print(webpage)
@@ -78,16 +79,18 @@ for i in range(1, 100):
         # print("mallProductUrl : ", mallProductUrl)
         # smartstore 인 경우 상세 주소로 이동한다.
         if(mallProductUrl.find("smartstore") > 0) :
+            print("mallProductUrl : ", mallProductUrl)
             smartStorePage = urllib.request.urlopen(mallProductUrl)
             smartStoreSoup = BeautifulSoup(smartStorePage, 'html.parser')
             # print("smartStoreSoup : ", smartStoreSoup)
             scriptTags = smartStoreSoup.find_all('script')
             # id='_10PxysFyMd')
             for scriptTag in scriptTags:
+
                 strScript = scriptTag.getText()
                 if(strScript.find("chrgrEmail") > 0):
                     print("/////////////////////////////////////////////")
-                    print("strScript : ", strScript)
+                    # print("strScript : ", strScript)
                     # print("Index : ", strScript.find("="))
                     # print("Length : ", len(strScript))
                     # 상호 가져오기
@@ -104,7 +107,7 @@ for i in range(1, 100):
                     print("strEmail : ", strEmail)
 
                     #파일에 쓴다
-                    f.write(strRepresentName + "," + strEmail + "\n")
+                    f.write(mallProductUrl + "," + strRepresentName + "," + strEmail + "\n")
                     print("/////////////////////////////////////////////")
             # print("eMailTag : ", eMailTag)
             # break
